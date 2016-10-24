@@ -146,10 +146,10 @@ class BusinessesViewController: UIViewController, UITableViewDelegate, UITableVi
     }
     
     func reLoadData() {
-        loadData(query: currentQuery, usePaging: false)
+        loadData(query: currentQuery, usePaging: false, useFilters: true)
     }
     
-    func loadData(query: String, usePaging: Bool) {
+    func loadData(query: String, usePaging: Bool, useFilters: Bool) {
         
         // Ref: http://guides.codepath.com/ios/Showing-a-progress-HUD
         // Ref: https://github.com/jdg/MBProgressHUD
@@ -168,14 +168,15 @@ class BusinessesViewController: UIViewController, UITableViewDelegate, UITableVi
         var sortBy = YelpSortMode.bestMatched
         var radius = "0" as String
         var categoriesList = [] as [String]
-        
-        var filters = helperYelp.getSavedSettings()
-        print("filters: \(filters)")
-        if filters.count > 0 {
-            hasHeals = filters[0] as! Bool
-            sortBy = filters[1] as! YelpSortMode
-            radius = filters[2] as! String
-            categoriesList = filters[3] as! [String]
+        if useFilters {
+            var filters = helperYelp.getSavedSettings()
+            print("filters: \(filters)")
+            if filters.count > 0 {
+                hasHeals = filters[0] as! Bool
+                sortBy = filters[1] as! YelpSortMode
+                radius = filters[2] as! String
+                categoriesList = filters[3] as! [String]
+            }
         }
         
         Business.searchWithTerm(term: query, offset: businessesOffset, sort: sortBy, radius: radius, categories: categoriesList, deals: hasHeals, completion: { (businesses: [Business]?, error: Error?) -> Void in
@@ -246,7 +247,7 @@ class BusinessesViewController: UIViewController, UITableViewDelegate, UITableVi
     // Hides the RefreshControl
     func refreshControlAction(refreshControl: UIRefreshControl) {
         // Load data from API
-        loadData(query: currentQuery, usePaging: false)
+        loadData(query: currentQuery, usePaging: false, useFilters: false)
     }
     
     // MARK: - Table view data source & delegates
@@ -314,7 +315,7 @@ extension BusinessesViewController: UIScrollViewDelegate {
                 loadingMoreView!.startAnimating()
                 
                 // ... Code to load more results ...
-                loadData(query: currentQuery, usePaging: true)
+                loadData(query: currentQuery, usePaging: true, useFilters: false)
             }
         }
     }
@@ -357,7 +358,7 @@ extension BusinessesViewController: UISearchBarDelegate {
         self.businesses.removeAll()
         
         // Load data from API
-        loadData(query: currentQuery, usePaging: false) // Default mode
+        loadData(query: currentQuery, usePaging: false, useFilters: false) // Default mode
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
@@ -369,7 +370,7 @@ extension BusinessesViewController: UISearchBarDelegate {
         self.businesses.removeAll()
         
         // Load data from API
-        loadData(query: searchBar.text!, usePaging: false) // Search mode
+        loadData(query: searchBar.text!, usePaging: false, useFilters: false) // Search mode
     }
     
     // http://shrikar.com/swift-ios-tutorial-uisearchbar-and-uisearchbardelegate/

@@ -79,7 +79,7 @@ class BusinessesMapViewController: UIViewController, MKMapViewDelegate {
         else {
             annotationView!.annotation = annotation
         }
-        annotationView!.image = UIImage(named: "yelp-icon")
+        annotationView!.image = UIImage(named: "yelp-thumb")
         
         return annotationView
     }
